@@ -1,16 +1,18 @@
 {
-  "name": "conventional-recommended-bump",
+  "name": "lerna-conventional-recommended-bump",
   "version": "0.2.1",
-  "description": "Get a recommended version bump based on conventional commits",
-  "homepage": "https://github.com/conventional-changelog/conventional-recommended-bump",
+  "description": "Get a recommended version bump based on conventional commits in a lerna repository",
+  "homepage": "https://github.com/laurentdesmet/lerna-conventional-recommended-bump",
   "author": {
-    "name": "Steve Mao",
-    "email": "maochenyan@gmail.com",
-    "url": "https://github.com/stevemao"
+    "name": "Laurent De Smet",
+    "email": "laurentdesmet1987@gmail.com",
+    "url": "https://github.com/laurentdesmet"
   },
-  "repository": "conventional-changelog/conventional-recommended-bump",
+  "repository": "laurentdesmet/lerna-conventional-recommended-bump",
   "license": "MIT",
   "keywords": [
+    "lerna",
+    "lerna-conventional-recommended-bump",
     "conventional-recommended-bump",
     "recommend",
     "conventional",
@@ -20,8 +22,9 @@
     "concat-stream": "^1.4.10",
     "conventional-commits-filter": "^1.0.0",
     "conventional-commits-parser": "^1.0.1",
-    "git-latest-semver-tag": "^1.0.0",
     "git-raw-commits": "^1.0.0",
+    "lerna-git-latest-semver-tag": "laurentdesmet/lerna-git-latest-semver-tag#lerna",
+    "lodash": "^4.14.0",
     "meow": "^3.3.0",
     "object-assign": "^4.0.1"
   },

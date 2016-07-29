@@ -8,7 +8,7 @@ Got the idea from https://github.com/conventional-changelog/conventional-changel
 ## Install
 
 ```sh
-$ npm install --save conventional-recommended-bump
+$ npm install --save lerna-conventional-recommended-bump
 ```
 
 

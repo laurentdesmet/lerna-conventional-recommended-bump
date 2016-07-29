@@ -2,11 +2,28 @@
 var concat = require('concat-stream');
 var conventionalCommitsFilter = require('conventional-commits-filter');
 var conventionalCommitsParser = require('conventional-commits-parser');
-var gitLatestSemverTag = require('git-latest-semver-tag');
+var gitLatestSemverTag = require('lerna-git-latest-semver-tag');
 var gitRawCommits = require('git-raw-commits');
 var objectAssign = require('object-assign');
+var curry = require('lodash/curry');
 
 var VERSIONS = ['major', 'minor', 'patch'];
+
+var packageFilter = curry(function (packageName, commit) {
+  var body = commit.body;
+
+  if (body == null) {
+    return false;
+  }
+
+  var match = body.match(/^affects: (.+)$/m);
+
+  if (match == null) {
+    return false;
+  } else {
+    return match[1].split(/,\s+/).indexOf(packageName) !== -1;
+  }
+})
 
 function conventionalRecommendedBump(options, parserOpts, cb) {
   var config;
@@ -14,6 +31,10 @@ function conventionalRecommendedBump(options, parserOpts, cb) {
 
   if (typeof options !== 'object') {
     throw new TypeError('options must be an object');
+  }
+
+  if (typeof options.packageName !== 'string') {
+    throw new TypeError('options.packageName is required');
   }
 
   if (typeof parserOpts === 'function') {
@@ -39,10 +60,11 @@ function conventionalRecommendedBump(options, parserOpts, cb) {
   }
 
   var whatBump = options.whatBump || config.whatBump || noop;
+  var packageName = options.packageName;
   parserOpts = objectAssign({}, config.parserOpts, parserOpts);
   parserOpts.warn = parserOpts.warn || options.warn;
 
-  gitLatestSemverTag(function(err, tag) {
+  gitLatestSemverTag(packageName, function(err, tag) {
     if (err) {
       cb(err);
       return;
@@ -54,13 +76,10 @@ function conventionalRecommendedBump(options, parserOpts, cb) {
     })
       .pipe(conventionalCommitsParser(parserOpts))
       .pipe(concat(function(data) {
-        var commits;
+        var commits = options.ignoreReverted ? conventionalCommitsFilter(data) : data;
 
-        if (options.ignoreReverted) {
-          commits = conventionalCommitsFilter(data);
-        } else {
-          commits = data;
-        }
+        // We only want commits that affect this specific package of the lerna repo
+        commits = commits.filter(packageFilter(packageName))
 
         if (!commits || !commits.length) {
           options.warn('No commits since last release');
